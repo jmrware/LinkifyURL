@@ -3,9 +3,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>PHP HTTP URL Linkification (Rev:20100905_2300)</title>
+<title>URL Linkification (Rev:20100906_0300)</title>
 <meta name="author" content="Jeff Roberson" />
-<meta name="version" content="20100905_2300" />
+<meta name="version" content="20100906_0300" />
 <meta name="licence" content="http://www.opensource.org/licenses/mit-license.php" />
 <script type="text/javascript" src="linkify.js"></script>
 <script type="text/javascript" src="/bin/DynamicRegexHighlighter.js"></script>
@@ -28,16 +28,16 @@
 jsresyntaxhighlighter.css from: http://stevenlevithan.com/regex/syntaxhighlighter/.
 Both: (copyright) 2010 Steven Levithan <http://stevenlevithan.com>, MIT Licence.
 Copy both to this file's folder then uncomment the following four lines. -->
-<!-- -->
+<!--
 <link rel="stylesheet" type="text/css" href="/css/jsresyntaxhighlighter.css" />
 <script type="text/javascript" src="/bin/jsresyntaxhighlighter.js"></script>
 <script type="text/javascript" src="/bin/ColorizeRegexSyntax.js"></script>
-
+ -->
 </head>
 <body>
-<h1>PHP HTTP URL Linkification.</h1>
+<h1>URL Linkification.</h1>
 
-<p style="text-align: center; font: bold 1.2em monospace;"><a title="Download latest version from Github" href="http://github.com/jmrware/LinkifyURL/archives/master">20100905_2300</a></p>
+<p style="text-align: center; font: bold 1.2em monospace;"><a title="Download latest version from Github" href="http://github.com/jmrware/LinkifyURL/archives/master">20100906_0300</a></p>
 <p>PHP version: <a href="linkify.php">linkify.php</a>. HTML/Javascript version: <a href="linkify.html">linkify.html</a>.</p>
 
 <div><b>Well-formed URL syntax (required to match 100% correctly):</b>
@@ -182,8 +182,8 @@ text [url = "http://example.com/path/file's_name.txt" ] and...<br />
 </div>
 <div class="">
 <p>Here's the PHP regular expression that plucks URL's from text:</p>
-<pre class="regex_x">$pluck_URL_long = '/
-# 20100905_pluck_URL: Match http\/ftp URL that is not already linkified.
+<pre class="regex_x">$url_pattern = '/
+# url_pattern: Match http(s)\/ftp(s) URL that is not already linkified.
   (\()                     # $1: URL delimited by (parentheses).
   ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)  # $2: URL.
   (\))                     # $3: ")" end delimiter.
@@ -205,22 +205,31 @@ text [url = "http://example.com/path/file's_name.txt" ] and...<br />
   ( \b                     # $14: Match other URLs.
     (?:ht|f)tps?:\/\/      # Required literal http URL prefix
     [A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]* # Unroll-the-loop. (normal*)
-    (?: (?!(?:&amp;(?:gt|apos|quot|amp|\#0*(?:34|39|62)|\#x0*(?:22|27|3e));))
+    (?: (?!(?:&amp;(?:gt|apos|quot|\#0*(?:34|39|62)|\#x0*(?:22|27|3e));))
       &amp;                    # Match "&amp;" if not an ending HTML entity (special).
       [A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]* # more normal*
     )*                     # Unroll-the-loop (special normal*)*.
-    [A-Za-z0-9\-_~\/#[\]@$()*+=%] # Last char can\'t be [.:?!&amp;\',;]
+    [A-Za-z0-9\-_~\/#[\]@$()*+;=%] # Last char can\'t be [.:?!&amp;\',]
   )                        # End $14. Other URLs.
 /imx';
+$url_replace = '$1$4$7$10$13&lt;a href="$2$5$8$11$14"&gt;$2$5$8$11$14&lt;/a&gt;$3$6$9$12';
 </pre>
-<p id="headerlinks">Here's the Javascript version:</p>
-<pre class="regex">$pluck_URL_short = '/(\()((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;
-=%]+)(\))|(\[)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)(\])|
-(\{)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)(\})|(&lt;|&amp;(?:lt|
-#60|#x3c);)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)(&gt;|&amp;(?:gt
-|#62|#x3e);)|((?:^|[^=\s\'"\]])\s*[\'"]?|[^=\s]\s+)(\b(?:ht|f)tps?:\/\/[A-Za-z
-0-9\-._~:\/?#[\]@!$\'()*+,;=%]*(?:(?!(?:&amp;(?:gt|apos|quot|#0*(?:34|39|62)|#x0*
-(?:22|27|3e));))&amp;[A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]*)*[A-Za-z0-9\-_~\/#[\]@
-$()*+=%])/im';</pre>
+<p id="headerlinks">Here's the Javascript version: (with some added newlines)</p>
+<pre class="regex">
+var url_pattern = /(\()((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%
+]+)(\))|(\[)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)(\])|(\{
+)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)(\})|(&lt;|&amp;(?:lt|\#60
+|\#x3c);)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)(&gt;|&amp;(?:gt|\
+#62|\#x3e);)|((?:^|[^=\s\'"\]])\s*[\'"]?|[^=\s]\s+)(\b(?:ht|f)tps?:\/\/[A-Za-z
+0-9\-._~:\/?#[\]@!$\'()*+,;=%]*(?:(?!(?:&amp;(?:gt|apos|quot|\#0*(?:34|39|62)|\#x0
+*(?:22|27|3e));))&amp;[A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]*)*[A-Za-z0-9\-_~\/#[\]
+@$()*+;=%])/img;
+var url_replace = '$1$4$7$10$13&lt;a href="$2$5$8$11$14"&gt;$2$5$8$11$14&lt;/a&gt;$3$6$9$12';</pre>
+<p>Dynamic regex syntax highlighting provided by: <a href="http://jmrware.com/articles/2010/dynregexhl/DynamicRegexHighlighter.html">DynamicRegexHighlighter</a></p>
+</div>
+<div>
+<p>Happy regexing!<br />
+&copy;2010 Jeff Roberson.<br />
+Released as open source under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT Licence</a></p>
 </div>
 </body></html>
