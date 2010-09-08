@@ -1,5 +1,5 @@
 /* File:        README for linkify.js and linkify.php
- * Version:     20100906_0900
+ * Version:     20100908_1700
  * Copyright:   (c) 2010 Jeff Roberson - http://jmrware.com
  * MIT License: see: http://www.opensource.org/licenses/mit-license.php
  */
@@ -7,7 +7,7 @@
 Summary:  This project consists of 2 script files: linkify.js and linkify.php.
 Each of these scripts contain a function called: "linkify()" which converts
 all URLs (HTTP, HTTPS, FTP and FTPS)) in a passed string into equivalent HTML
-link tags. i.e. Given the input string: 'Go http://example.com here!', the
+link tags. i.e. Given the input string: 'Go http://test.com here!', the
 function returns: 'Go <a href="http://test.com">http://test.com"<a> here!'.
 The linkify function does not touch URLs that are already part of a HTML or
 BBCode link. e.g. 

@@ -3,10 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>URL Linkification (Rev:20100906_0900)</title>
+<title>jmrware - URL Linkification (HTTP/FTP)</title>
 <meta name="author" content="Jeff Roberson" />
-<meta name="version" content="20100906_0900" />
-<meta name="licence" content="http://www.opensource.org/licenses/mit-license.php" />
+<meta name="version" content="20100908_1700" />
+<meta name="License" content="http://www.opensource.org/licenses/mit-license.php" />
 <script type="text/javascript" src="linkify.js"></script>
 <script type="text/javascript" src="/bin/DynamicRegexHighlighter.js"></script>
 <style type="text/css" media="all">
@@ -26,8 +26,8 @@
 </style>
 <!-- To add regex syntax colorizing to this page, get jsresyntaxhighlighter.js and
 jsresyntaxhighlighter.css from: http://stevenlevithan.com/regex/syntaxhighlighter/.
-Both: (copyright) 2010 Steven Levithan <http://stevenlevithan.com>, MIT Licence.
-Copy both to this file's folder then uncomment the following four lines. -->
+Both: (copyright) 2010 Steven Levithan <http://stevenlevithan.com>, MIT License.
+Copy both to this file's folder then uncomment the following three lines. -->
 <!--
 <link rel="stylesheet" type="text/css" href="/css/jsresyntaxhighlighter.css" />
 <script type="text/javascript" src="/bin/jsresyntaxhighlighter.js"></script>
@@ -35,200 +35,270 @@ Copy both to this file's folder then uncomment the following four lines. -->
  -->
 </head>
 <body>
-<h1>URL Linkification.</h1>
+<h1>URL Linkification (HTTP/FTP).</h1>
 
-<p style="text-align: center; font: bold 1.2em monospace;"><a title="Download latest version from Github" href="http://github.com/jmrware/LinkifyURL/archives/master">20100906_0900</a></p>
-<p>PHP version: <a href="linkify.php">linkify.php</a>. HTML/Javascript version: <a href="linkify.html">linkify.html</a>.</p>
+<p style="text-align: center; font: bold 1.2em monospace;"><a title="Download from Github" href="http://github.com/jmrware/LinkifyURL/archives/v1.0">Version 1.0 20100908_1700</a></p>
+<p>PHP version: <a href="linkify.php">linkify.php</a>. Javascript version: <a href="linkify.html">linkify.html</a>.</p>
+<p>Click on paragraphs below to apply Javascript linkification to un-linkified URLs.</p>
 
 <div><b>Well-formed URL syntax (required to match 100% correctly):</b>
-<p class='linkify'>URLs within no delimiters:<br />
-text http://example.com and...<br />
-text http://example.com/ and...<br />
-text http://example.com/path/ and...<br />
-text http://example.com/path/(file's_name.txt) and...<br />
-text http://example.com/path/(file's_name.txt)?query=val&amp;var2=val2#fragment and...<br />
-text http://example.com/path/(file's_name.txt) and...<br />
-text http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]<br />
+<p class='linkify'>Plain URLs (not delimited):<br />
+foo http://example.com bar...<br />
+foo http://example.com:80 bar...<br />
+foo http://example.com:80/path/ bar...<br />
+foo http://example.com:80/path/file.txt bar...<br />
+foo http://example.com:80/path/file.txt?query=val&amp;var2=val2 bar...<br />
+foo http://example.com:80/path/file.txt?query=val&amp;var2=val2#fragment bar...<br />
+foo http://example.com/(file's_name.txt) bar... (with ' and (parentheses))<br />
+foo http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348] bar... ([IPv6 literal])<br />
+foo http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]/file.txt bar... ([IPv6] with path)<br />
 </p>
-<p class='linkify'>URLs within matching delimiters:<br />
-text &lt;http://example.com/path/file's_name.txt&gt; and... (encoded as: &amp;lt;URL&amp;gt;)<br />
-text &#60;http://example.com/path/file's_name.txt&#62; and... (encoded as: &amp;#60;URL&amp;#62;)<br />
-text &#x3C;http://example.com/path/file's_name.txt&#x3E; and... (encoded as: &amp;#x3C;URL&amp;#x3E;)<br />
-text {http://example.com/path/file's_name.txt} and...<br />
-text (http://example.com/path/file's_name.txt) and...<br />
-text [http://example.com/path/file's_name.txt] and...<br />
-text (http://example.com/path/(file's_name.txt)) and...<br />
-text [http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]]<br />
+<p class='linkify'>URLs ending with [.!',;:?] punctuation:<br />
+foo http://example.com. bar...<br />
+foo http://example.com! bar...<br />
+foo http://example.com' bar...<br />
+foo http://example.com, bar...<br />
+foo http://example.com; bar...<br />
+foo http://example.com: bar...<br />
+foo http://example.com? bar...<br />
 </p>
-<p class='linkify'>URLs within matching delimiters with inside punctuation:<br />
-text &lt;http://example.com/path/file's_name.txt.&gt; and... (encoded as: &amp;lt;URL&amp;gt;)<br />
-text &#60;http://example.com/path/file's_name.txt.&#62; and... (encoded as: &amp;#60;URL&amp;#62;)<br />
-text &#x3C;http://example.com/path/file's_name.txt.&#x3E; and... (encoded as: &amp;#x3C;URL&amp;#x3E;)<br />
-text {http://example.com/path/file's_name.txt.} and...<br />
-text (http://example.com/path/file's_name.txt.) and...<br />
-text [http://example.com/path/file's_name.txt.] and...<br />
-text (http://example.com/path/(file's_name.txt).) and...<br />
-text [http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348].]<br />
+<p class='linkify'>URLs within matching "()[]{}&lt;&gt;" delimiters:<br />
+foo (http://example.com) bar...<br />
+foo [http://example.com] bar...<br />
+foo {http://example.com} bar...<br />
+foo &lt;http://example.com&gt; bar... (encoded as: &amp;lt;URL&amp;gt;)<br />
+foo &#60;http://example.com&#62; bar... (encoded as: &amp;#60;URL&amp;#62;)<br />
+foo &#x3C;http://example.com&#x3E; bar... (encoded as: &amp;#x3C;URL&amp;#x3E;)<br />
+foo (http://example.com/(path)/file.txt) bar... (with inside (parentheses))<br />
+foo (http://example.com/path/(file.txt)) bar... (with ending (parentheses))<br />
+foo [http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]] bar... ([IPv6 literal])<br />
+</p>
+<p class='linkify'>URLs within matching "()[]{}&lt;&gt;" delimiters ending with [.!',;:?] punctuation:<br />
+foo (http://example.com.) bar...<br />
+foo [http://example.com!] bar...<br />
+foo {http://example.com'} bar...<br />
+foo &lt;http://example.com,&gt; bar... (encoded as: &amp;lt;URL&amp;gt;)<br />
+foo &#60;http://example.com;&#62; bar... (encoded as: &amp;#60;URL&amp;#62;)<br />
+foo &#x3C;http://example.com:&#x3E; bar... (encoded as: &amp;#x3C;URL&amp;#x3E;)<br />
+foo (http://example.com/(path)/file.txt?) bar... (with inside (parentheses))<br />
+foo (http://example.com/path/(file.txt).) bar... (with ending (parentheses))<br />
+foo [http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]!] bar... ([IPv6 literal])<br />
 </p>
 <p class='linkify'>URLs within matching quotes:<br />
-text 'http://example.com/path/file's_name.txt' and...<br />
-text &apos;http://example.com/path/file's_name.txt&apos; and... (encoded as: &amp;apos;URL&amp;apos;)<br />
-text &#39;http://example.com/path/file's_name.txt&#39; and... (encoded as: &amp;#39;URL&amp;#39;)<br />
-text &#039;http://example.com/path/file's_name.txt&#039; and... (encoded as: &amp;#039;URL&amp;#039;)<br />
-text &#x27;http://example.com/path/file's_name.txt&#x27; and... (encoded as: &amp;#x27;URL&amp;#x27;)<br />
-text &#x027;http://example.com/path/file's_name.txt&#x027; and... (encoded as: &amp;#x027;URL&amp;#x027;)<br />
-text "http://example.com/path/file's_name.txt" and...<br />
-text &quot;http://example.com/path/file's_name.txt&quot; and... (encoded as: &amp;quot;URL&amp;quot;)<br />
-text &#34;http://example.com/path/file's_name.txt&#34; and... (encoded as: &amp;#34;URL&amp;#34;)<br />
-text &#034;http://example.com/path/file's_name.txt&#034; and... (encoded as: &amp;#034;URL&amp;#034;)<br />
-text &#x22;http://example.com/path/file's_name.txt&#x22; and... (encoded as: &amp;#x22;URL&amp;#x22;)<br />
-text &#x022;http://example.com/path/file's_name.txt&#x022; and... (encoded as: &amp;#x022;URL&amp;#x022;)<br />
+foo 'http://example.com' bar...<br />
+foo &apos;http://example.com&apos; bar... (encoded as: &amp;apos;URL&amp;apos; <strong>Note 1</strong>.)<br />
+foo &#39;http://example.com&#39; bar... (encoded as: &amp;#39;URL&amp;#39;)<br />
+foo &#039;http://example.com&#039; bar... (encoded as: &amp;#039;URL&amp;#039;)<br />
+foo &#x27;http://example.com&#x27; bar... (encoded as: &amp;#x27;URL&amp;#x27;)<br />
+foo &#x027;http://example.com&#x027; bar... (encoded as: &amp;#x027;URL&amp;#x027;)<br />
+foo "http://example.com" bar...<br />
+foo &quot;http://example.com&quot; bar... (encoded as: &amp;quot;URL&amp;quot;)<br />
+foo &#34;http://example.com&#34; bar... (encoded as: &amp;#34;URL&amp;#34;)<br />
+foo &#034;http://example.com&#034; bar... (encoded as: &amp;#034;URL&amp;#034;)<br />
+foo &#x22;http://example.com&#x22; bar... (encoded as: &amp;#x22;URL&amp;#x22;)<br />
+foo &#x022;http://example.com&#x022; bar... (encoded as: &amp;#x022;URL&amp;#x022;)<br />
 </p>
-<p class='linkify'>Verify that sentence ending puntuation not included in URL match:<br />
-text http://example.com/path/file's_name.txt. and...<br />
-text http://example.com/path/file's_name.txt: and...<br />
-text http://example.com/path/file's_name.txt? and...<br />
-text http://example.com/path/file's_name.txt! and...<br />
-text http://example.com/path/file's_name.txt' and...<br />
-text http://example.com/path/file's_name.txt, and...<br />
+<p><strong>Note 1</strong>. The &amp;apos; entity is not part of the HTML 4 standard and Internet Explorer 6 does
+not recognize it. If you are viewing the HTML version of this page with IE, this entity may initially appear as: "&amp;apos;". In Firefox, Opera and Safari, it appears as "'". However, the <tt>linkify_html()</tt> function converts each &amp;apos; to its numeric html entity equivalent: &amp;#39;, so once this has run (either by clicking on the paragraph or loading the PHP version of the page), then they should all appear correctly. Note also that The <a href="http://www.w3.org/TR/2002/REC-xhtml1-20020801/#C_16">W3C recommends</a> to NOT use the &amp;apos; entity in HTML documents, but to use &amp;#39; instead. This page is using it to demonstrate how this char is handled by the <tt>Linkify()</tt> function.</p>
+
+<p class='linkify'>URLs within matching quotes and ending [.!',;:?] punctuation inside:<br />
+foo 'http://example.com.' bar...<br />
+foo &apos;http://example.com!&apos; bar... (encoded as: &amp;apos;URL&amp;apos; <strong>Note 1</strong>.)<br />
+foo &#39;http://example.com'&#39; bar... (encoded as: &amp;#39;URL&amp;#39;)<br />
+foo &#039;http://example.com,&#039; bar... (encoded as: &amp;#039;URL&amp;#039;)<br />
+foo &#x27;http://example.com;&#x27; bar... (encoded as: &amp;#x27;URL&amp;#x27;)<br />
+foo &#x027;http://example.com:&#x027; bar... (encoded as: &amp;#x027;URL&amp;#x027;)<br />
+foo "http://example.com?" bar...<br />
+foo &quot;http://example.com.&quot; bar... (encoded as: &amp;quot;URL&amp;quot;)<br />
+foo &#34;http://example.com!&#34; bar... (encoded as: &amp;#34;URL&amp;#34;)<br />
+foo &#034;http://example.com'&#034; bar... (encoded as: &amp;#034;URL&amp;#034;)<br />
+foo &#x22;http://example.com,&#x22; bar... (encoded as: &amp;#x22;URL&amp;#x22;)<br />
+foo &#x022;http://example.com;&#x022; bar... (encoded as: &amp;#x022;URL&amp;#x022;)<br />
 </p>
-<p class='linkify'>URLs within matching quotes and inside punctuation:<br />
-text 'http://example.com/path/file's_name.txt.' and...<br />
-text &apos;http://example.com/path/file's_name.txt.&apos; and... (encoded as: &amp;apos;URL&amp;apos;)<br />
-text &#39;http://example.com/path/file's_name.txt.&#39; and... (encoded as: &amp;#39;URL&amp;#39;)<br />
-text &#039;http://example.com/path/file's_name.txt.&#039; and... (encoded as: &amp;#039;URL&amp;#039;)<br />
-text &#x27;http://example.com/path/file's_name.txt.&#x27; and... (encoded as: &amp;#x27;URL&amp;#x27;)<br />
-text &#x027;http://example.com/path/file's_name.txt.&#x027; and... (encoded as: &amp;#x027;URL&amp;#x027;)<br />
-text "http://example.com/path/file's_name.txt." and...<br />
-text &quot;http://example.com/path/file's_name.txt.&quot; and... (encoded as: &amp;quot;URL&amp;quot;)<br />
-text &#34;http://example.com/path/file's_name.txt.&#34; and... (encoded as: &amp;#34;URL&amp;#34;)<br />
-text &#034;http://example.com/path/file's_name.txt.&#034; and... (encoded as: &amp;#034;URL&amp;#034;)<br />
-text &#x22;http://example.com/path/file's_name.txt.&#x22; and... (encoded as: &amp;#x22;URL&amp;#x22;)<br />
-text &#x022;http://example.com/path/file's_name.txt.&#x022; and... (encoded as: &amp;#x022;URL&amp;#x022;)<br />
+<p class='linkify'>URLs within matching quotes and ending [.!',;:?] punctuation outside:<br />
+foo 'http://example.com'. bar...<br />
+foo &apos;http://example.com&apos;! bar... (encoded as: &amp;apos;URL&amp;apos; <strong>Note 1</strong>.)<br />
+foo &#39;http://example.com&#39;' bar... (encoded as: &amp;#39;URL&amp;#39;)<br />
+foo &#039;http://example.com&#039;, bar... (encoded as: &amp;#039;URL&amp;#039;)<br />
+foo &#x27;http://example.com&#x27;; bar... (encoded as: &amp;#x27;URL&amp;#x27;)<br />
+foo &#x027;http://example.com&#x027;: bar... (encoded as: &amp;#x027;URL&amp;#x027;)<br />
+foo "http://example.com"? bar...<br />
+foo &quot;http://example.com&quot;. bar... (encoded as: &amp;quot;URL&amp;quot;)<br />
+foo &#34;http://example.com&#34;! bar... (encoded as: &amp;#34;URL&amp;#34;)<br />
+foo &#034;http://example.com&#034;' bar... (encoded as: &amp;#034;URL&amp;#034;)<br />
+foo &#x22;http://example.com&#x22;, bar... (encoded as: &amp;#x22;URL&amp;#x22;)<br />
+foo &#x022;http://example.com&#x022;; bar... (encoded as: &amp;#x022;URL&amp;#x022;)<br />
+</p>
+<p class='linkify'>URLs with embedded quote and ampersand HTML entities:<br />
+foo http://example.com/file&apos;s_name.txt bar... ("'" encoded as: &amp;apos; <strong>Note 1</strong>.)<br />
+foo http://example.com/file&#39;s_name.txt bar... ("'" encoded as: &amp;#39;)<br />
+foo http://example.com/file&#x27;s_name.txt bar... ("'" encoded as: &amp;#x27;)<br />
+foo http://example.com/file&amp;s_name.txt bar... ("&amp;" encoded as: &amp;amp;)<br />
 </p>
 </div>
+
 <div><b>Not well-formed improperly delimited URL syntax (may not match 100% correctly):</b>
-<p class='linkify'>URls within only opening delimiters:<br />
-text &lt;http://example.com/path/file's_name.txt and...<br />
-text {http://example.com/path/file's_name.txt and...<br />
-text (http://example.com/path/file's_name.txt and...<br />
-text [http://example.com/path/file's_name.txt and...<br />
-text (http://example.com/path/(file's_name.txt) and...<br />
-text [http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]<br />
+<p class='linkify'>URLs within only opening "()[]{}&lt;&gt;" delimiter:<br />
+foo (http://example.com bar...<br />
+foo [http://example.com bar...<br />
+foo {http://example.com bar...<br />
+foo &lt;http://example.com bar... (encoded as: &amp;lt;URL)<br />
+foo &#60;http://example.com bar... (encoded as: &amp;#60;URL)<br />
+foo &#x3C;http://example.com bar... (encoded as: &amp;#x3C;URL)<br />
+foo (http://example.com/(path)/file.txt bar... (<strong>Note 2</strong>.)<br />
+foo (http://example.com/path/(file.txt) bar... (<strong>Note 2</strong>.)<br />
+foo [http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348] bar... (<strong>Note 2</strong>.)<br />
 </p>
-<p class='linkify'>URLs within only closing delimiters:<br />
-text http://example.com/path/file's_name.txt&gt; and...<br />
-text http://example.com/path/file's_name.txt} and...<br />
-text http://example.com/path/file's_name.txt) and...<br />
-text http://example.com/path/file's_name.txt] and...<br />
-text http://example.com/path/(file's_name.txt)) and...<br />
-text http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]]<br />
+<p class='linkify'>URLs within only closing "()[]{}&lt;&gt;" delimiter:<br />
+foo http://example.com) bar... (<strong>Note 2</strong>.)<br />
+foo http://example.com] bar... (<strong>Note 2</strong>.)<br />
+foo http://example.com} bar...<br />
+foo http://example.com&gt; bar... (encoded as: URL&amp;gt;)<br />
+foo http://example.com&#62; bar... (encoded as: URL&amp;#62;)<br />
+foo http://example.com&#x3e; bar... (encoded as: URL&amp;#x3E;)<br />
+foo http://example.com/(path)/file.txt) bar... (<strong>Note 2</strong>.)<br />
+foo http://example.com/path/(file.txt)) bar... (<strong>Note 2</strong>.)<br />
+foo http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7348]] bar... (<strong>Note 2</strong>.)<br />
 </p>
+<p><strong>Note 2</strong>. The linkify function demonstrated by this web page uses a single regex replace operation that is not smart enough to correctly exclude the trailing delimiter that is erroneously being included in these examples. However, by using more sophisticated logic, a smarter linkify function can be easily implemented. As an example, the <tt>analyse_links()</tt> function in <tt>linkify.js</tt> checks for balanced bracket nesting to determine which links to mark red.</p>
 <p class='linkify'>URLs within only opening quotes:<br />
-text 'http://example.com/path/file's_name.txt and...<br />
-text &apos;http://example.com/path/file's_name.txt and... (encoded as: &amp;apos;URL)<br />
-text &#39;http://example.com/path/file's_name.txt and... (encoded as: &amp;#39;URL)<br />
-text &#039;http://example.com/path/file's_name.txt and... (encoded as: &amp;#039;URL)<br />
-text &#x27;http://example.com/path/file's_name.txt and... (encoded as: &amp;#x27;URL)<br />
-text &#x027;http://example.com/path/file's_name.txt and... (encoded as: &amp;#x027;URL)<br />
-text "http://example.com/path/file's_name.txt and...<br />
-text &quot;http://example.com/path/file's_name.txt and... (encoded as: &amp;quot;URL)<br />
-text &#34;http://example.com/path/file's_name.txt and... (encoded as: &amp;#34;URL)<br />
-text &#034;http://example.com/path/file's_name.txt and... (encoded as: &amp;#034;URL)<br />
-text &#x22;http://example.com/path/file's_name.txt and... (encoded as: &amp;#x22;URL)<br />
-text &#x022;http://example.com/path/file's_name.txt and... (encoded as: &amp;#x022;URL)<br />
-</p>
-<p class='linkify'>URLs within only opening quotes plus punctuation:<br />
-text 'http://example.com/path/file's_name.txt. and...<br />
-text &apos;http://example.com/path/file's_name.txt: and... (encoded as: &amp;apos;URL)<br />
-text &#39;http://example.com/path/file's_name.txt? and... (encoded as: &amp;#39;URL)<br />
-text &#039;http://example.com/path/file's_name.txt! and... (encoded as: &amp;#039;URL)<br />
-text &#x27;http://example.com/path/file's_name.txt, and... (encoded as: &amp;#x27;URL)<br />
-text &#x027;http://example.com/path/file's_name.txt. and... (encoded as: &amp;#x027;URL)<br />
-text "http://example.com/path/file's_name.txt: and...<br />
-text &quot;http://example.com/path/file's_name.txt? and... (encoded as: &amp;quot;URL)<br />
-text &#34;http://example.com/path/file's_name.txt! and... (encoded as: &amp;#34;URL)<br />
-text &#034;http://example.com/path/file's_name.txt, and... (encoded as: &amp;#034;URL)<br />
-text &#x22;http://example.com/path/file's_name.txt. and... (encoded as: &amp;#x22;URL)<br />
-text &#x022;http://example.com/path/file's_name.txt. and... (encoded as: &amp;#x022;URL)<br />
+foo 'http://example.com bar...<br />
+foo &apos;http://example.com bar... (encoded as: &amp;apos;URL <strong>Note 1</strong>.)<br />
+foo &#39;http://example.com bar... (encoded as: &amp;#39;URL)<br />
+foo &#039;http://example.com bar... (encoded as: &amp;#039;URL)<br />
+foo &#x27;http://example.com bar... (encoded as: &amp;#x27;URL)<br />
+foo &#x027;http://example.com bar... (encoded as: &amp;#x027;URL)<br />
+foo "http://example.com bar...<br />
+foo &quot;http://example.com bar... (encoded as: &amp;quot;URL)<br />
+foo &#34;http://example.com bar... (encoded as: &amp;#34;URL)<br />
+foo &#034;http://example.com bar... (encoded as: &amp;#034;URL)<br />
+foo &#x22;http://example.com bar... (encoded as: &amp;#x22;URL)<br />
+foo &#x022;http://example.com bar... (encoded as: &amp;#x022;URL)<br />
 </p>
 <p class='linkify'>URLs within only closing quotes:<br />
-text http://example.com/path/file's_name.txt' and...<br />
-text http://example.com/path/file's_name.txt&apos; and... (encoded as: URL&amp;apos;)<br />
-text http://example.com/path/file's_name.txt&#39; and... (encoded as: URL&amp;#39;)<br />
-text http://example.com/path/file's_name.txt&#039; and... (encoded as: URL&amp;#039;)<br />
-text http://example.com/path/file's_name.txt&#x27; and... (encoded as: URL&amp;#x27;)<br />
-text http://example.com/path/file's_name.txt&#x027; and... (encoded as: URL&amp;#x027;)<br />
-text http://example.com/path/file's_name.txt" and...<br />
-text http://example.com/path/file's_name.txt&quot; and... (encoded as: URL&amp;quot;)<br />
-text http://example.com/path/file's_name.txt&#34; and... (encoded as: URL&amp;#34;)<br />
-text http://example.com/path/file's_name.txt&#034; and... (encoded as: URL&amp;#034;)<br />
-text http://example.com/path/file's_name.txt&#x22; and... (encoded as: URL&amp;#x22;)<br />
-text http://example.com/path/file's_name.txt&#x022; and... (encoded as: URL&amp;#x022;)<br />
+foo http://example.com' bar...<br />
+foo http://example.com&apos; bar... (encoded as: URL&amp;apos; <strong>Note 1</strong>.)<br />
+foo http://example.com&#39; bar... (encoded as: URL&amp;#39;)<br />
+foo http://example.com&#039; bar... (encoded as: URL&amp;#039;)<br />
+foo http://example.com&#x27; bar... (encoded as: URL&amp;#x27;)<br />
+foo http://example.com&#x027; bar... (encoded as: URL&amp;#x027;)<br />
+foo http://example.com" bar...<br />
+foo http://example.com&quot; bar... (encoded as: URL&amp;quot;)<br />
+foo http://example.com&#34; bar... (encoded as: URL&amp;#34;)<br />
+foo http://example.com&#034; bar... (encoded as: URL&amp;#034;)<br />
+foo http://example.com&#x22; bar... (encoded as: URL&amp;#x22;)<br />
+foo http://example.com&#x022; bar... (encoded as: URL&amp;#x022;)<br />
+</p>
+<p class='linkify'>URLs within only closing quotes and ending [.!',;:?] punctuation inside:<br />
+foo http://example.com.' bar...<br />
+foo http://example.com!&apos; bar... (encoded as: URL&amp;apos; <strong>Note 1</strong>.)<br />
+foo http://example.com'&#39; bar... (encoded as: URL&amp;#39;)<br />
+foo http://example.com,&#039; bar... (encoded as: URL&amp;#039;)<br />
+foo http://example.com;&#x27; bar... (encoded as: URL&amp;#x27;)<br />
+foo http://example.com:&#x027; bar... (encoded as: URL&amp;#x027;)<br />
+foo http://example.com?" bar...<br />
+foo http://example.com.&quot; bar... (encoded as: URL&amp;quot;)<br />
+foo http://example.com!&#34; bar... (encoded as: URL&amp;#34;)<br />
+foo http://example.com'&#034; bar... (encoded as: URL&amp;#034;)<br />
+foo http://example.com,&#x22; bar... (encoded as: URL&amp;#x22;)<br />
+foo http://example.com;&#x022; bar... (encoded as: URL&amp;#x022;)<br />
+</p>
+<p class='linkify'>URLs within only closing quotes and ending [.!',;:?] punctuation outside:<br />
+foo http://example.com'. bar...<br />
+foo http://example.com&apos;! bar... (encoded as: URL&amp;apos; <strong>Note 1</strong>.)<br />
+foo http://example.com&#39;' bar... (encoded as: URL&amp;#39;)<br />
+foo http://example.com&#039;, bar... (encoded as: URL&amp;#039;)<br />
+foo http://example.com&#x27;; bar... (encoded as: URL&amp;#x27;)<br />
+foo http://example.com&#x027;: bar... (encoded as: URL&amp;#x027;)<br />
+foo http://example.com"? bar...<br />
+foo http://example.com&quot;. bar... (encoded as: URL&amp;quot;)<br />
+foo http://example.com&#34;! bar... (encoded as: URL&amp;#34;)<br />
+foo http://example.com&#034;' bar... (encoded as: URL&amp;#034;)<br />
+foo http://example.com&#x22;, bar... (encoded as: URL&amp;#x22;)<br />
+foo http://example.com&#x022;; bar... (encoded as: URL&amp;#x022;)<br />
 </p>
 </div>
-<div><b>Pre-linkified URLs in HTML or BBCode sytax (should never match):</b>
-<p class='linkify'>URLs as attribute values with no spacing:<br />
-text href=http://example.com/path/file's_name.txt and...<br />
-text src='http://example.com/path/file's_name.txt' and...<br />
-text {url="http://example.com/path/file's_name.txt"] and...<br />
-text [url]http://example.com/path/file's_name.txt[/url] and...<br />
+<div><b>Pre-linkified URLs in HTML or BBCode syntax (should never match):</b>
+<p class='linkify'>URLs preceded with "=" (i.e. inside HTML tags):<br />
+foo href=http://example.com bar...           (unquoted, no spacing)<br />
+foo href="http://example.com" bar...         (double-quoted, no spacing)<br />
+foo href='http://example.com' bar...         (single-quoted, no spacing)<br />
+foo href = http://example.com bar...         (unquoted, with spacing)<br />
+foo href = "http://example.com" bar...       (double-quoted, with spacing)<br />
+foo href = 'http://example.com' bar...       (single-quoted, with spacing)<br />
 </p>
-<p class='linkify'>URLs as attribute values with spacing:<br />
-text href = http://example.com/path/file's_name.txt and...<br />
-text src = 'http://example.com/path/file's_name.txt' and...<br />
-text [url = "http://example.com/path/file's_name.txt" ] and...<br />
+
+<p class='linkify'>URL's preceded with "=" (i.e. inside BBCode tags):<br />
+foo [url=http://example.com/path/]LINK[/url]  bar...<br />
+foo [url = http://example.com/path/]LINK[/url]  bar...<br />
+foo [url="http://example.com/path/"]LINK[/url]  bar...<br />
+foo [url = "http://example.com/path/"]LINK[/url]  bar...<br />
+foo [url='http://example.com/path/']LINK[/url]  bar...<br />
+foo [url = 'http://example.com/path/']LINK[/url]  bar...<br />
+foo [url]http://example.com/path/[/url]  bar...<br />
 </p>
 </div>
 <div class="">
-<p>Here's the PHP regular expression that plucks URL's from text:</p>
-<pre class="regex_x">$url_pattern = '/
-# url_pattern: Match http(s)\/ftp(s) URL that is not already linkified.
-  (\()                     # $1: URL delimited by (parentheses).
-  ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)  # $2: URL.
+<p>Here's the regular expression that plucks URL's from text (PHP version):</p>
+<pre class="regex_x">
+$url_pattern = '/
+# Match http &amp; ftp URL that is not already linkified.
+  # Alternative 1: URL delimited by (parentheses).
+  (\()                     # $1  "(" start delimiter.
+  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&amp;\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
   (\))                     # $3: ")" end delimiter.
-| (\[)                     # $4: URL delimited by [square brackets].
-  ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)  # $5: URL.
+| # Alternative 2: URL delimited by [square brackets].
+  (\[)                     # $4: "[" start delimiter.
+  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&amp;\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
   (\])                     # $6: "]" end delimiter.
-| (\{)                     # $7: URL delimited by {curly brackets}.
-  ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)  # $8: URL.
+| # Alternative 3: URL delimited by {curly braces}.
+  (\{)                     # $7: "{" start delimiter.
+  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&amp;\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
   (\})                     # $9: "}" end delimiter.
-| (&lt;|&amp;(?:lt|\#60|\#x3c);)  # $10: URL delimited by &lt;angle brackets&gt;.
-  ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;\'()*+,;=%]+)  # $11: URL.
-  (&gt;|&amp;(?:gt|\#62|\#x3e);)  # $12: "&gt;" end delimiter. (HTML entities too).
-| (                        # $13: Prefix proving URLs not already linked.
-    (?: ^                  # Can be a beginning of line\/ string or
-    | [^=\s\'"\]]          # a non-equals, non-quote, followed by
+| # Alternative 4: URL delimited by &lt;angle brackets&gt;.
+  (&lt;|&amp;(?:lt|\#60|\#x3c);)  # $10: "&lt;" start delimiter (or HTML entity).
+  ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&amp;\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
+  (&gt;|&amp;(?:gt|\#62|\#x3e);)  # $12: "&gt;" end delimiter (or HTML entity).
+| # Alternative 5: URL not delimited by (), [], {} or &lt;&gt;.
+  (                        # $13: Prefix proving URL not already linked.
+    (?: ^                  # Can be a beginning of line or string, or
+    | [^=\s\'"\]]          # a non-"=", non-quote, non-"]", followed by
     ) \s*[\'"]?            # optional whitespace and optional quote;
   | [^=\s]\s+              # or... a non-equals sign followed by whitespace.
   )                        # End $13. Non-prelinkified-proof prefix.
-  ( \b                     # $14: Match other URLs.
-    (?:ht|f)tps?:\/\/      # Required literal http URL prefix
-    [A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]* # Unroll-the-loop. (normal*)
-    (?: (?!(?:&amp;(?:gt|apos|quot|\#0*(?:34|39|62)|\#x0*(?:22|27|3e));))
-      &amp;                    # Match "&amp;" if not an ending HTML entity (special).
-      [A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]* # more normal*
+  ( \b                     # $14: Other non-delimited URL.
+    (?:ht|f)tps?:\/\/      # Required literal http, https, ftp or ftps prefix.
+    [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]+ # All URI chars except "&amp;" (normal*).
+    (?:                    # Either on a "&amp;" or at the end of URI.
+      (?!                  # Allow a "&amp;" char only if not start of an...
+        &amp;(?:gt|\#0*62|\#x0*3e);                  # HTML "&gt;" entity, or
+      | &amp;(?:amp|apos|quot|\#0*3[49]|\#x0*2[27]); # a [&amp;\'"] entity if
+        [.!&amp;\',:?;]?        # followed by optional punctuation then
+        (?:[^a-z0-9\-._~!$&amp;\'()*+,;=:\/?#[\]@%]|$)  # a non-URI char or EOS.
+      ) &amp;                  # If neg-assertion true, match "&amp;" (special).
+      [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]* # More non-&amp; URI chars (normal*).
     )*                     # Unroll-the-loop (special normal*)*.
-    [A-Za-z0-9\-_~\/#[\]@$()*+;=%] # Last char can\'t be [.:?!&amp;\',]
-  )                        # End $14. Other URLs.
+    [a-z0-9\-_~$()*+=\/#[\]@%]  # Last char can\'t be [.!&amp;\',;:?]
+  )                        # End $14. Other non-delimited URL.
 /imx';
 $url_replace = '$1$4$7$10$13&lt;a href="$2$5$8$11$14"&gt;$2$5$8$11$14&lt;/a&gt;$3$6$9$12';
 </pre>
-<p id="headerlinks">Here's the Javascript version: (with some added newlines)</p>
-<pre class="regex">var url_pattern = /(\()((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;'()*+,;=%
-]+)(\))|(\[)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;'()*+,;=%]+)(\])|(\{
-)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;'()*+,;=%]+)(\})|(&lt;|&amp;(?:lt|#60|
-#x3c);)((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&amp;'()*+,;=%]+)(&gt;|&amp;(?:gt|#62
-|#x3e);)|((?:^|[^=\s'"\]])\s*['"]?|[^=\s]\s+)(\b(?:ht|f)tps?:\/\/[A-Za-z0-9\-
-._~:\/?#[\]@!$'()*+,;=%]*(?:(?!(?:&amp;(?:gt|apos|quot|#0*(?:34|39|62)|#x0*(?:22|
-27|3e));))&amp;[A-Za-z0-9\-._~:\/?#[\]@!$'()*+,;=%]*)*[A-Za-z0-9\-_~\/#[\]@$()*+;
-=%])/img;
-var url_replace = '$1$4$7$10$13&lt;a href="$2$5$8$11$14"&gt;$2$5$8$11$14&lt;/a&gt;$3$6$9$12';</pre>
+<p id="headerlinks">Here's the Javascript version: (with some added line breaks):</p>
+<pre class="regex">
+var url_pattern = /(\()((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&amp;'()*+,;=:\/?#[\]@%]+)(\))
+|(\[)((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&amp;'()*+,;=:\/?#[\]@%]+)(\])|(\{)((?:ht|f)tps?
+:\/\/[a-z0-9\-._~!$&amp;'()*+,;=:\/?#[\]@%]+)(\})|(&lt;|&amp;(?:lt|#60|#x3c);)((?:ht|f)tps?:
+\/\/[a-z0-9\-._~!$&amp;'()*+,;=:\/?#[\]@%]+)(&gt;|&amp;(?:gt|#62|#x3e);)|((?:^|[^=\s'"\]])\s
+*['"]?|[^=\s]\s+)(\b(?:ht|f)tps?:\/\/[a-z0-9\-._~!$'()*+,;=:\/?#[\]@%]+(?:(?!&amp;(?:
+gt|#0*62|#x0*3e);|&amp;(?:amp|apos|quot|#0*3[49]|#x0*2[27]);[.!&amp;',:?;]?(?:[^a-z0-9\-.
+_~!$&amp;'()*+,;=:\/?#[\]@%]|$))&amp;[a-z0-9\-._~!$'()*+,;=:\/?#[\]@%]*)*[a-z0-9\-_~$()*+
+=\/#[\]@%])/img;
+</pre>
 <p>Dynamic regex syntax highlighting provided by: <a href="http://jmrware.com/articles/2010/dynregexhl/DynamicRegexHighlighter.html">DynamicRegexHighlighter</a></p>
 </div>
 <div>
 <p>Happy regexing!<br />
 &copy;2010 Jeff Roberson.<br />
-Released as open source under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT Licence</a></p>
+Released as open source under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT License</a></p>
 </div>
 </body></html>

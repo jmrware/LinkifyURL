@@ -1,6 +1,6 @@
 <?php
 /* File:        linkify.php
- * Version:     20100906_0900
+ * Version:     20100908_1700
  * Copyright:   (c) 2010 Jeff Roberson - http://jmrware.com
  * MIT License: http://www.opensource.org/licenses/mit-license.php
  *
@@ -9,42 +9,70 @@
  * Usage:   See example page: linkify.html
  */
 function linkify($text) {
-    $url_pattern = '/
-    # url_pattern: Match http(s)\/ftp(s) URL that is not already linkified.
-      (\()                     # $1: URL delimited by (parentheses).
-      ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&\'()*+,;=%]+)  # $2: URL.
+    $url_pattern = '/# Match http & ftp URL that is not already linkified.
+      # Alternative 1: URL delimited by (parentheses).
+      (\()                     # $1  "(" start delimiter.
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
       (\))                     # $3: ")" end delimiter.
-    | (\[)                     # $4: URL delimited by [square brackets].
-      ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&\'()*+,;=%]+)  # $5: URL.
+    | # Alternative 2: URL delimited by [square brackets].
+      (\[)                     # $4: "[" start delimiter.
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
       (\])                     # $6: "]" end delimiter.
-    | (\{)                     # $7: URL delimited by {curly brackets}.
-      ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&\'()*+,;=%]+)  # $8: URL.
+    | # Alternative 3: URL delimited by {curly braces}.
+      (\{)                     # $7: "{" start delimiter.
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
       (\})                     # $9: "}" end delimiter.
-    | (<|&(?:lt|\#60|\#x3c);)  # $10: URL delimited by <angle brackets>.
-      ((?:ht|f)tps?:\/\/[A-Za-z0-9\-._~:\/?#[\]@!$&\'()*+,;=%]+)  # $11: URL.
-      (>|&(?:gt|\#62|\#x3e);)  # $12: ">" end delimiter. (HTML entities too).
-    | (                        # $13: Prefix proving URLs not already linked.
-        (?: ^                  # Can be a beginning of line\/ string or
-        | [^=\s\'"\]]          # a non-equals, non-quote, followed by
+    | # Alternative 4: URL delimited by <angle brackets>.
+      (<|&(?:lt|\#60|\#x3c);)  # $10: "<" start delimiter (or HTML entity).
+      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
+      (>|&(?:gt|\#62|\#x3e);)  # $12: ">" end delimiter (or HTML entity).
+    | # Alternative 5: URL not delimited by (), [], {} or <>.
+      (                        # $13: Prefix proving URL not already linked.
+        (?: ^                  # Can be a beginning of line or string, or
+        | [^=\s\'"\]]          # a non-"=", non-quote, non-"]", followed by
         ) \s*[\'"]?            # optional whitespace and optional quote;
       | [^=\s]\s+              # or... a non-equals sign followed by whitespace.
       )                        # End $13. Non-prelinkified-proof prefix.
-      ( \b                     # $14: Match other URLs.
-        (?:ht|f)tps?:\/\/      # Required literal http URL prefix
-        [A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]* # Unroll-the-loop. (normal*)
-        (?: (?!(?:&(?:gt|apos|quot|\#0*(?:34|39|62)|\#x0*(?:22|27|3e));))
-          &                    # Match "&" if not an ending HTML entity (special).
-          [A-Za-z0-9\-._~:\/?#[\]@!$\'()*+,;=%]* # more normal*
+      ( \b                     # $14: Other non-delimited URL.
+        (?:ht|f)tps?:\/\/      # Required literal http, https, ftp or ftps prefix.
+        [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]+ # All URI chars except "&" (normal*).
+        (?:                    # Either on a "&" or at the end of URI.
+          (?!                  # Allow a "&" char only if not start of an...
+            &(?:gt|\#0*62|\#x0*3e);                  # HTML ">" entity, or
+          | &(?:amp|apos|quot|\#0*3[49]|\#x0*2[27]); # a [&\'"] entity if
+            [.!&\',:?;]?        # followed by optional punctuation then
+            (?:[^a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]|$)  # a non-URI char or EOS.
+          ) &                  # If neg-assertion true, match "&" (special).
+          [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]* # More non-& URI chars (normal*).
         )*                     # Unroll-the-loop (special normal*)*.
-        [A-Za-z0-9\-_~\/#[\]@$()*+;=%] # Last char can\'t be [.:?!&\',]
-      )                        # End $14. Other URLs.
+        [a-z0-9\-_~$()*+=\/#[\]@%]  # Last char can\'t be [.!&\',;:?]
+      )                        # End $14. Other non-delimited URL.
     /imx';
     $url_replace = '$1$4$7$10$13<a href="$2$5$8$11$14">$2$5$8$11$14</a>$3$6$9$12';
     return preg_replace($url_pattern, $url_replace, $text);
+}
+function linkify_html($text) {
+    $text = preg_replace('/&apos;/', '&#39;', $text); // IE does not handle &apos; entity!
+    $section_html_pattern = '%# Section text into HTML <A> tags  and everything else.
+      (                              # $1: Everything not HTML <A> tag.
+        [^<]+(?:(?!<a\b)<[^<]*)*     # non A tag stuff starting with non-"<".
+      |      (?:(?!<a\b)<[^<]*)+     # non A tag stuff starting with "<".
+      )                              # End $1.
+    | (                              # $2: HTML <A...>...</A> tag.
+        <a\b[^>]*>                   # <A...> opening tag.
+        [^<]*(?:(?!</?a\b)<[^<]*)*   # A tag contents.
+        </a\s*>                      # </A> closing tag.
+      )                              # End $2:
+    %ix';
+    return preg_replace_callback($section_html_pattern, '_linkify_html_callback', $text);
+}
+function _linkify_html_callback($matches) {
+    if (isset($matches[2])) return $matches[2];
+    return linkify($matches[1]);
 }
 // Linkify and display the linkify.html file.
 $text = file_get_contents('linkify.html');
 preg_match('/^(.*?<body[^>]*>)(.*)$/si', $text, $matches);
 $text = $matches[2];
-echo($matches[1]. linkify($text));
+echo($matches[1] . linkify_html($text));
 ?>
