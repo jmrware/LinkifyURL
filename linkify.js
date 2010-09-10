@@ -1,6 +1,6 @@
 /* <![CDATA[ */
 /* File:        linkify.js
- * Version:     20100908_1700
+ * Version:     20100910_0900
  * Copyright:   (c) 2010 Jeff Roberson - http://jmrware.com
  * MIT License: http://www.opensource.org/licenses/mit-license.php
  *
