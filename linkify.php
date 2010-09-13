@@ -1,6 +1,6 @@
 <?php
 /* File:        linkify.php
- * Version:     20100910_0900
+ * Version:     20100913_0900
  * Copyright:   (c) 2010 Jeff Roberson - http://jmrware.com
  * MIT License: http://www.opensource.org/licenses/mit-license.php
  *
@@ -9,7 +9,8 @@
  * Usage:   See example page: linkify.html
  */
 function linkify($text) {
-    $url_pattern = '/# Match http & ftp URL that is not already linkified.
+    $url_pattern = '/# Rev:20100913_0900 github.com\/jmrware\/LinkifyURL
+    # Match http & ftp URL that is not already linkified.
       # Alternative 1: URL delimited by (parentheses).
       (\()                     # $1  "(" start delimiter.
       ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
@@ -53,14 +54,15 @@ function linkify($text) {
 }
 function linkify_html($text) {
     $text = preg_replace('/&apos;/', '&#39;', $text); // IE does not handle &apos; entity!
-    $section_html_pattern = '%# Section text into HTML <A> tags  and everything else.
+    $section_html_pattern = '%# Rev:20100913_0900 github.com/jmrware/LinkifyURL
+    # Section text into HTML <A> tags  and everything else.
       (                              # $1: Everything not HTML <A> tag.
         [^<]+(?:(?!<a\b)<[^<]*)*     # non A tag stuff starting with non-"<".
       |      (?:(?!<a\b)<[^<]*)+     # non A tag stuff starting with "<".
       )                              # End $1.
     | (                              # $2: HTML <A...>...</A> tag.
         <a\b[^>]*>                   # <A...> opening tag.
-        [^<]*(?:(?!</?a\b)<[^<]*)*   # A tag contents.
+        [^<]*(?:(?!</a\b)<[^<]*)*    # A tag contents.
         </a\s*>                      # </A> closing tag.
       )                              # End $2:
     %ix';

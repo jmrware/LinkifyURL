@@ -1,5 +1,5 @@
 /* File:        README for linkify.js and linkify.php
- * Version:     20100910_0900
+ * Version:     20100913_0900
  * Copyright:   (c) 2010 Jeff Roberson - http://jmrware.com
  * MIT License: see: http://www.opensource.org/licenses/mit-license.php
  */
