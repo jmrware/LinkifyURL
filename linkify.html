@@ -5,10 +5,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>jmrware - URL Linkification (HTTP/FTP)</title>
 <meta name="author" content="Jeff Roberson" />
-<meta name="version" content="20100913_0900" />
+<meta name="version" content="20101009_0800" />
 <meta name="License" content="http://www.opensource.org/licenses/mit-license.php" />
 <script type="text/javascript" src="linkify.js"></script>
-<script type="text/javascript" src="/bin/DynamicRegexHighlighter.js"></script>
 <style type="text/css" media="all">
     body {margin: 2em; color:#333; background:#DDB; font-family: monospace;}
     h1 {text-align: center;}
@@ -24,20 +23,25 @@
     .regex_err {color: #FFF; background-color: #F00;}
     .regex_hl {color: #FFF; background-color: #060;}
 </style>
-<!-- To add regex syntax colorizing to this page, get jsresyntaxhighlighter.js and
-jsresyntaxhighlighter.css from: http://stevenlevithan.com/regex/syntaxhighlighter/.
+<!-- To add dynamic regex syntax highlighting and regex syntax colorizing to this page,
+First get jsresyntaxhighlighter.js and jsresyntaxhighlighter.css from:
+http://stevenlevithan.com/regex/syntaxhighlighter/.
 Both: (copyright) 2010 Steven Levithan <http://stevenlevithan.com>, MIT License.
-Copy both to this file's folder then uncomment the following three lines. -->
+Also get DynamicRegexHighlighter.js and ColorizeRegexSyntax.js from:
+http://github.com/jmrware/DynamicRegexHighlighter/
+Both: (copyright) 2010 Jeff Roberson <http://jmrware.com>, MIT License. 
+Copy all four files to this folder then uncomment the following four lines: -->
 <!--
-<link rel="stylesheet" type="text/css" href="/css/jsresyntaxhighlighter.css" />
-<script type="text/javascript" src="/bin/jsresyntaxhighlighter.js"></script>
-<script type="text/javascript" src="/bin/ColorizeRegexSyntax.js"></script>
+<link rel="stylesheet" type="text/css" href="jsresyntaxhighlighter.css" />
+<script type="text/javascript" src="jsresyntaxhighlighter.js"></script>
+<script type="text/javascript" src="DynamicRegexHighlighter.js"></script>
+<script type="text/javascript" src="ColorizeRegexSyntax.js"></script>
  -->
 </head>
 <body>
 <h1>URL Linkification (HTTP/FTP).</h1>
 
-<p style="text-align: center; font: bold 1.2em monospace;"><a title="Download latest version from Github" href="http://github.com/jmrware/LinkifyURL/archives/master">Version 20100913_0900</a></p>
+<p style="text-align: center; font: bold 1.2em monospace;"><a title="Download latest version from Github" href="http://github.com/jmrware/LinkifyURL/archives/master">Version 20101009_0800</a></p>
 <p>PHP version: <a href="linkify.php" title="Page is pre-linkified by PHP script prior to page load">linkify.php</a>. Javascript version: <a href="linkify.html" title="Page is interactively linkified by Javascript after page load.">linkify.html</a>.</p>
 <p>Click on paragraphs below to apply Javascript linkification to un-linkified URLs.</p>
 
