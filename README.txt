@@ -1,5 +1,5 @@
 /* File:        README for linkify.js and linkify.php
- * Version:     20101009_0800
+ * Version:     20101010_1000
  * Copyright:   (c) 2010 Jeff Roberson - http://jmrware.com
  * MIT License: see: http://www.opensource.org/licenses/mit-license.php
  */
@@ -10,14 +10,14 @@ all URLs (HTTP, HTTPS, FTP and FTPS)) in a passed string into equivalent HTML
 link tags. i.e. Given the input string: 'Go http://test.com here!', the
 function returns: 'Go <a href="http://test.com">http://test.com"<a> here!'.
 The linkify function does not touch URLs that are already part of a HTML or
-BBCode link. e.g. 
+BBCode link.
 
 File Descriptions:
 -----------
  linkify.js
 -----------
 Javascript file containing the linkify() function. It also has a few support
-functions which allow the user to clink on elements of the linkify.html page
+functions which allow the user to click on elements of the linkify.html page
 to linkify their contents interactively. Once linkified the script checks to
 see if the resulting URL links contain any unbalanced parentheses or square
 brackets and displays the ones which are unbalanced in red.
