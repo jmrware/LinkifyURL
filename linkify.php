@@ -13,19 +13,19 @@ function linkify($text) {
     # Match http & ftp URL that is not already linkified.
       # Alternative 1: URL delimited by (parentheses).
       (\()                     # $1  "(" start delimiter.
-      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
+      ((?:(?:ht|f)tps?:\/\/|www\.)[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $2: URL.
       (\))                     # $3: ")" end delimiter.
     | # Alternative 2: URL delimited by [square brackets].
       (\[)                     # $4: "[" start delimiter.
-      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
+      ((?:(?:ht|f)tps?:\/\/|www\.)[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $5: URL.
       (\])                     # $6: "]" end delimiter.
     | # Alternative 3: URL delimited by {curly braces}.
       (\{)                     # $7: "{" start delimiter.
-      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
+      ((?:(?:ht|f)tps?:\/\/|www\.)[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $8: URL.
       (\})                     # $9: "}" end delimiter.
     | # Alternative 4: URL delimited by <angle brackets>.
       (<|&(?:lt|\#60|\#x3c);)  # $10: "<" start delimiter (or HTML entity).
-      ((?:ht|f)tps?:\/\/[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
+      ((?:(?:ht|f)tps?:\/\/|www\.)[a-z0-9\-._~!$&\'()*+,;=:\/?#[\]@%]+)  # $11: URL.
       (>|&(?:gt|\#62|\#x3e);)  # $12: ">" end delimiter (or HTML entity).
     | # Alternative 5: URL not delimited by (), [], {} or <>.
       (                        # $13: Prefix proving URL not already linked.
@@ -35,7 +35,7 @@ function linkify($text) {
       | [^=\s]\s+              # or... a non-equals sign followed by whitespace.
       )                        # End $13. Non-prelinkified-proof prefix.
       ( \b                     # $14: Other non-delimited URL.
-        (?:ht|f)tps?:\/\/      # Required literal http, https, ftp or ftps prefix.
+        (?:(?:ht|f)tps?:\/\/|www\.) # Required literal http, https, ftp or ftps prefix.
         [a-z0-9\-._~!$\'()*+,;=:\/?#[\]@%]+ # All URI chars except "&" (normal*).
         (?:                    # Either on a "&" or at the end of URI.
           (?!                  # Allow a "&" char only if not start of an...
